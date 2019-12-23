@@ -12,14 +12,30 @@ def paint(event):
 
 
 master = Tk()
-master.title("Painting using Ovals")
+master.title("Letter recognition")
+master.geometry("300x300")
+
 w = Canvas(master,
            width=canvas_width,
-           height=canvas_height)
-w.pack(expand=YES, fill=BOTH)
+           height=canvas_height,
+           borderwidth=2,
+           relief="groove",
+           bg="white")
+w.pack(expand="True")
 w.bind("<B1-Motion>", paint)
 
-message = Label(master, text="Press and Drag the mouse to draw")
-message.pack(side=BOTTOM)
+
+def clearCanvas():
+    w.delete("all")
+
+
+clearBtn = Button(master, text="Clear", command=clearCanvas)
+clearBtn.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
+
+recognizeBtn = Button(master, text="Recognize")
+recognizeBtn.pack(side=BOTTOM, pady=5, ipady=5, ipadx=10)
+
+message = Label(master, text="Draw A, B or C in the canvas and click Recognize")
+message.pack(side=BOTTOM, pady=10)
 
 mainloop()
