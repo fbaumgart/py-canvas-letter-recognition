@@ -3,9 +3,6 @@ from tkinter import filedialog
 from PIL import Image
 import io
 
-canvas_width = 100
-canvas_height = 100
-
 
 def paint(event):
     python_green = "#476042"
@@ -13,21 +10,30 @@ def paint(event):
     x2, y2 = (event.x + 1), (event.y + 1)
     w.create_oval(x1, y1, x2, y2, fill=python_green)
 
-def clearCanvas():
+
+def clear_canvas():
     w.delete("all")
 
 
 def recognize():
+    TEMP_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test.png"
     ps = w.postscript(colormode="mono")
-    global hen
-    hen = filedialog.asksaveasfilename(defaultextension='.jpg')
-    im = Image.open(io.BytesIO(ps.encode('utf-8')))
-    im.save(hen + '.jpg')
+    ps_im = Image.open(io.BytesIO(ps.encode('utf-8')))
+    ps_im.save(TEMP_PATH)
+
+    img = Image.open(TEMP_PATH, mode='r')
+    imgByteArr = io.BytesIO()
+    img.save(imgByteArr, format='PNG')
+    imgByteArr = imgByteArr.getvalue()
+    print(list(img.getdata()))
 
 
 master = Tk()
 master.title("Letter recognition")
 master.geometry("300x300")
+
+canvas_width = 100
+canvas_height = 100
 
 w = Canvas(master,
            width=canvas_width,
@@ -38,11 +44,7 @@ w = Canvas(master,
 w.pack(expand="True")
 w.bind("<B1-Motion>", paint)
 
-
-
-
-
-clearBtn = Button(master, text="Clear", command=clearCanvas)
+clearBtn = Button(master, text="Clear", command=clear_canvas)
 clearBtn.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
 recognizeBtn = Button(master, text="Recognize", command=recognize)
