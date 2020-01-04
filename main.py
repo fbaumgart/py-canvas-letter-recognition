@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image
 import io
+import os
 
 
 def paint(event):
@@ -24,8 +25,6 @@ def convert_list_of_RGB_tuples_to_list_of_bytes(param):
                 new_list_of_bytes.append(1)
             break
 
-    print(len(new_list_of_bytes))
-    print(new_list_of_bytes)
     return new_list_of_bytes
 
 
@@ -35,12 +34,20 @@ def recognize():
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
     image.save(SAVE_PATH, format='PNG')
 
-    list_of_RGB_tuples_from_image = list(image.getdata())
+    list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
     convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples_from_image)
 
 
-#learning mode window code
+#learning mode view
 def learning_mode():
+    def canvas_to_list_of_RGB_tuples(canvas):
+        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test2.png"
+        ps_from_canvas = canvas.postscript(colormode="mono")
+        image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
+        image.save(SAVE_PATH, format='PNG')
+
+        list_of_RGB_tuples_from_image = list(image.getdata())  # each tuple represents one pixel
+        return list_of_RGB_tuples_from_image
 
     def paint(event):
         python_green = "#476042"
@@ -50,6 +57,33 @@ def learning_mode():
 
     def clear_canvas():
         w.delete("all")
+
+    def learn():
+        list_of_RGB_tuples = canvas_to_list_of_RGB_tuples(w)
+        list_of_bytes = convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples)
+        save_pattern(list_of_bytes, letter_choice)
+        clear_canvas()
+
+    def save_pattern(list_of_bytes, character):
+        list = []
+        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
+        if character == 0:
+            try:
+                with open(SAVE_PATH + "A.txt", "a+") as f:
+                    #if os.stat(f).st_size == 0:
+                    #   f.write(list_of_bytes)
+                    #elif os.stat("file").st_size != 0:
+                        #file_contents = f.read()
+                        #file_contents.append()
+                    f.write(str(list_of_bytes))
+            except FileNotFoundError:
+                print("File not accessible")
+            list.append(list_of_bytes)
+        elif character == 1:
+            list.append(list_of_bytes)
+        elif character == 2:
+            list.append(list_of_bytes)
+
 
     #def display_letter_choice():
      #   print(radio_variable.get())
@@ -70,7 +104,7 @@ def learning_mode():
     clear_button = Button(learning_window, text="Clear", command=clear_canvas)
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
-    learn_button = Button(learning_window, text="Learn", command=clear_canvas)
+    learn_button = Button(learning_window, text="Learn", command=learn)
     learn_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     radio_variable = IntVar()
@@ -87,7 +121,7 @@ def learning_mode():
 
     mainloop()
 
-
+#recognition mode view
 master = Tk()
 master.title("Letter recognition")
 master.geometry("300x300")
