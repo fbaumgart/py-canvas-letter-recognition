@@ -14,17 +14,29 @@ def clear_canvas():
     w.delete("all")
 
 
-def recognize():
-    TEMP_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test.png"
-    ps = w.postscript(colormode="mono")
-    ps_im = Image.open(io.BytesIO(ps.encode('utf-8')))
-    ps_im.save(TEMP_PATH)
+def convert_list_of_RGB_tuples_to_list_of_bytes(param):
+    new_list_of_bytes = []
+    for i in param:
+        for j in i:
+            if i[0] == 255:
+                new_list_of_bytes.append(0)
+            elif i[0] == 0:
+                new_list_of_bytes.append(1)
+            break
 
-    img = Image.open(TEMP_PATH, mode='r')
-    imgByteArr = io.BytesIO()
-    img.save(imgByteArr, format='PNG')
-    imgByteArr = imgByteArr.getvalue()
-    print(list(img.getdata()))
+    print(len(new_list_of_bytes))
+    print(new_list_of_bytes)
+    return new_list_of_bytes
+
+
+def recognize():
+    SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test.png"
+    ps_from_canvas = w.postscript(colormode="mono")
+    image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
+    image.save(SAVE_PATH, format='PNG')
+
+    list_of_RGB_tuples_from_image = list(image.getdata())
+    convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples_from_image)
 
 
 #learning mode window code
@@ -62,10 +74,11 @@ def learning_mode():
     learn_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     radio_variable = IntVar()
-    radio_variable.set(1)
-    Radiobutton(learning_window, text="A", variable=radio_variable, value=1).pack()
-    Radiobutton(learning_window, text="B", variable=radio_variable, value=2).pack()
-    Radiobutton(learning_window, text="C", variable=radio_variable, value=3).pack()
+    radio_variable.set(0)
+    Radiobutton(learning_window, text="A", variable=radio_variable, value=0).pack()
+    Radiobutton(learning_window, text="B", variable=radio_variable, value=1).pack()
+    Radiobutton(learning_window, text="C", variable=radio_variable, value=2).pack()
+    letter_choice = radio_variable.get()
 
     message = Label(learning_window, text="Choose the character, draw and click Learn")
     message.pack(side=BOTTOM, pady=10)
