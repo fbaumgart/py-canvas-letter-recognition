@@ -61,12 +61,12 @@ def learning_mode():
     def learn():
         list_of_RGB_tuples = canvas_to_list_of_RGB_tuples(w)
         list_of_bytes = convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples)
-        save_pattern(list_of_bytes, letter_choice)
+        save_pattern(list_of_bytes, radio_variable)
         clear_canvas()
 
     def save_pattern(list_of_bytes, character):
-        list = []
         SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
+        character = radio_variable.get()
         if character == 0:
             try:
                 with open(SAVE_PATH + "A.txt", "a+") as f:
@@ -75,23 +75,57 @@ def learning_mode():
                     #elif os.stat("file").st_size != 0:
                         #file_contents = f.read()
                         #file_contents.append()
+                    f.write(",")
                     f.write(str(list_of_bytes))
             except FileNotFoundError:
                 print("File not accessible")
-            list.append(list_of_bytes)
         elif character == 1:
-            list.append(list_of_bytes)
+            try:
+                with open(SAVE_PATH + "B.txt", "a+") as f:
+                    # if os.stat(f).st_size == 0:
+                    #   f.write(list_of_bytes)
+                    # elif os.stat("file").st_size != 0:
+                    # file_contents = f.read()
+                    # file_contents.append()
+                    f.write(",")
+                    f.write(str(list_of_bytes))
+            except FileNotFoundError:
+                print("File not accessible")
         elif character == 2:
-            list.append(list_of_bytes)
+            try:
+                with open(SAVE_PATH + "C.txt", "a+") as f:
+                    # if os.stat(f).st_size == 0:
+                    #   f.write(list_of_bytes)
+                    # elif os.stat("file").st_size != 0:
+                    # file_contents = f.read()
+                    # file_contents.append()
+                    f.write(",")
+                    f.write(str(list_of_bytes))
+            except FileNotFoundError:
+                print("File not accessible")
 
+    #test
+    def file_content_to_list(file):
+        file_content = file.read()
+        file_contents_list = list(file_content.split(","))
+        print(file_contents_list)
 
-    #def display_letter_choice():
-     #   print(radio_variable.get())
+    #test
+    def read_file_contents():
+        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
+        with open(SAVE_PATH + "A.txt", "r") as f:
+            file_content = f.read()
+            print("File content" + file_content)
+            file_contents_list = list(file_content.split(",["))
+            print(file_contents_list)
+            print(file_contents_list[1])
 
     master.destroy()
+
     learning_window = Tk()
     learning_window.title("Letter recognition - learning mode")
     learning_window.geometry("300x300")
+
     w = Canvas(learning_window,
                width=canvas_width,
                height=canvas_height,
@@ -104,7 +138,7 @@ def learning_mode():
     clear_button = Button(learning_window, text="Clear", command=clear_canvas)
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
-    learn_button = Button(learning_window, text="Learn", command=learn)
+    learn_button = Button(learning_window, text="Learn", command=read_file_contents)
     learn_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     radio_variable = IntVar()
@@ -112,14 +146,12 @@ def learning_mode():
     Radiobutton(learning_window, text="A", variable=radio_variable, value=0).pack()
     Radiobutton(learning_window, text="B", variable=radio_variable, value=1).pack()
     Radiobutton(learning_window, text="C", variable=radio_variable, value=2).pack()
-    letter_choice = radio_variable.get()
 
     message = Label(learning_window, text="Choose the character, draw and click Learn")
     message.pack(side=BOTTOM, pady=10)
 
-    #display_letter_button = Button(learning_window, text="Display", command=display_letter_choice).pack()
-
     mainloop()
+
 
 #recognition mode view
 master = Tk()
