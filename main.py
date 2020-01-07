@@ -75,8 +75,8 @@ def learning_mode():
                     #elif os.stat("file").st_size != 0:
                         #file_contents = f.read()
                         #file_contents.append()
-                    f.write(",")
                     f.write(str(list_of_bytes))
+                    f.write("\n")
             except FileNotFoundError:
                 print("File not accessible")
         elif character == 1:
@@ -87,8 +87,8 @@ def learning_mode():
                     # elif os.stat("file").st_size != 0:
                     # file_contents = f.read()
                     # file_contents.append()
-                    f.write(",")
                     f.write(str(list_of_bytes))
+                    f.write("\n")
             except FileNotFoundError:
                 print("File not accessible")
         elif character == 2:
@@ -99,26 +99,24 @@ def learning_mode():
                     # elif os.stat("file").st_size != 0:
                     # file_contents = f.read()
                     # file_contents.append()
-                    f.write(",")
                     f.write(str(list_of_bytes))
+                    f.write("\n")
             except FileNotFoundError:
                 print("File not accessible")
 
     #test
     def file_content_to_list(file):
         file_content = file.read()
-        file_contents_list = list(file_content.split(","))
+        file_contents_list = list(file_content.split("\n"))
         print(file_contents_list)
 
     #test
     def read_file_contents():
         SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
         with open(SAVE_PATH + "A.txt", "r") as f:
-            file_content = f.read()
-            print("File content" + file_content)
-            file_contents_list = list(file_content.split(",["))
-            print(file_contents_list)
-            print(file_contents_list[1])
+            file_contents_as_list = f.readlines()
+            #file_contents_list = list(file_content.split("\n"))
+            print(file_contents_as_list)
 
     master.destroy()
 
@@ -138,7 +136,10 @@ def learning_mode():
     clear_button = Button(learning_window, text="Clear", command=clear_canvas)
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
-    learn_button = Button(learning_window, text="Learn", command=read_file_contents)
+    read_button = Button(learning_window, text="Read", command=read_file_contents)
+    read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
+
+    learn_button = Button(learning_window, text="Learn", command=learn)
     learn_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     radio_variable = IntVar()
