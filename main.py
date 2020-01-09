@@ -2,7 +2,6 @@ from tkinter import *
 from PIL import Image
 import io
 import numpy as np
-import os
 import csv
 
 
@@ -31,10 +30,8 @@ def convert_list_of_RGB_tuples_to_list_of_bits(param):
 
 
 def recognize():
-    SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test.png"
     ps_from_canvas = w.postscript(colormode="mono")
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
-    image.save(SAVE_PATH, format='PNG')
 
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
     convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
@@ -61,7 +58,7 @@ def learning_mode():
         list_of_RGB_tuples = canvas_to_list_of_RGB_tuples(w)
         list_of_bits = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples)
         list_with_character = add_character_to_list_of_bits(list_of_bits, radio_variable)
-        save_pattern2(list_with_character)
+        save_pattern(list_with_character)
         clear_canvas()
 
     def add_character_to_list_of_bits(list_of_bits, character):
@@ -75,7 +72,7 @@ def learning_mode():
 
         return list_of_bits
 
-    def save_pattern2(list_of_bits):
+    def save_pattern(list_of_bits):
         try:
             with open("dataset", "a+") as f:
                 wr = csv.writer(f, quoting=csv.QUOTE_ALL)
@@ -83,6 +80,7 @@ def learning_mode():
         except FileNotFoundError:
             print("File not accessible")
 
+    #test
     def read_from_csv():
         with open("dataset", "r", newline='\n') as f:
             reader = csv.reader(f)
@@ -107,6 +105,7 @@ def learning_mode():
     clear_button = Button(learning_window, text="Clear", command=clear_canvas)
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
+    #test
     read_button = Button(learning_window, text="Read", command=read_from_csv)
     read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
