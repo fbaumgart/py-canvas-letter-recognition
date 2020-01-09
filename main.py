@@ -1,7 +1,9 @@
 from tkinter import *
 from PIL import Image
 import io
+import numpy as np
 import os
+import csv
 
 
 def paint(event):
@@ -15,17 +17,17 @@ def clear_canvas():
     w.delete("all")
 
 
-def convert_list_of_RGB_tuples_to_list_of_bytes(param):
-    new_list_of_bytes = []
+def convert_list_of_RGB_tuples_to_list_of_bits(param):
+    new_list_of_bits = []
     for i in param:
         for j in i:
             if i[0] == 255:
-                new_list_of_bytes.append(0)
+                new_list_of_bits.append(0)
             elif i[0] == 0:
-                new_list_of_bytes.append(1)
+                new_list_of_bits.append(1)
             break
 
-    return new_list_of_bytes
+    return new_list_of_bits
 
 
 def recognize():
@@ -35,17 +37,14 @@ def recognize():
     image.save(SAVE_PATH, format='PNG')
 
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
-    convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples_from_image)
+    convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
 
 
 #learning mode view
 def learning_mode():
     def canvas_to_list_of_RGB_tuples(canvas):
-        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\temp\\test2.png"
         ps_from_canvas = canvas.postscript(colormode="mono")
         image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
-        image.save(SAVE_PATH, format='PNG')
-
         list_of_RGB_tuples_from_image = list(image.getdata())  # each tuple represents one pixel
         return list_of_RGB_tuples_from_image
 
@@ -60,63 +59,35 @@ def learning_mode():
 
     def learn():
         list_of_RGB_tuples = canvas_to_list_of_RGB_tuples(w)
-        list_of_bytes = convert_list_of_RGB_tuples_to_list_of_bytes(list_of_RGB_tuples)
-        save_pattern(list_of_bytes, radio_variable)
+        list_of_bits = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples)
+        list_with_character = add_character_to_list_of_bits(list_of_bits, radio_variable)
+        save_pattern2(list_with_character)
         clear_canvas()
 
-    def save_pattern(list_of_bytes, character):
-        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
+    def add_character_to_list_of_bits(list_of_bits, character):
         character = radio_variable.get()
         if character == 0:
-            try:
-                with open(SAVE_PATH + "A.txt", "a+") as f:
-                    #if os.stat(f).st_size == 0:
-                    #   f.write(list_of_bytes)
-                    #elif os.stat("file").st_size != 0:
-                        #file_contents = f.read()
-                        #file_contents.append()
-                    f.write(str(list_of_bytes))
-                    f.write("\n")
-            except FileNotFoundError:
-                print("File not accessible")
+            list_of_bits.append("A")
         elif character == 1:
-            try:
-                with open(SAVE_PATH + "B.txt", "a+") as f:
-                    # if os.stat(f).st_size == 0:
-                    #   f.write(list_of_bytes)
-                    # elif os.stat("file").st_size != 0:
-                    # file_contents = f.read()
-                    # file_contents.append()
-                    f.write(str(list_of_bytes))
-                    f.write("\n")
-            except FileNotFoundError:
-                print("File not accessible")
+            list_of_bits.append("B")
         elif character == 2:
-            try:
-                with open(SAVE_PATH + "C.txt", "a+") as f:
-                    # if os.stat(f).st_size == 0:
-                    #   f.write(list_of_bytes)
-                    # elif os.stat("file").st_size != 0:
-                    # file_contents = f.read()
-                    # file_contents.append()
-                    f.write(str(list_of_bytes))
-                    f.write("\n")
-            except FileNotFoundError:
-                print("File not accessible")
+            list_of_bits.append("C")
 
-    #test
-    def file_content_to_list(file):
-        file_content = file.read()
-        file_contents_list = list(file_content.split("\n"))
-        print(file_contents_list)
+        return list_of_bits
 
-    #test
-    def read_file_contents():
-        SAVE_PATH = "C:\\Studia\\7 semestr\\SI\\cw3\\patterns\\"
-        with open(SAVE_PATH + "A.txt", "r") as f:
-            file_contents_as_list = f.readlines()
-            #file_contents_list = list(file_content.split("\n"))
-            print(file_contents_as_list)
+    def save_pattern2(list_of_bits):
+        try:
+            with open("dataset", "a+") as f:
+                wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+                wr.writerow(list_of_bits)
+        except FileNotFoundError:
+            print("File not accessible")
+
+    def read_from_csv():
+        with open("dataset", "r", newline='\n') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                print(row)
 
     master.destroy()
 
@@ -136,7 +107,7 @@ def learning_mode():
     clear_button = Button(learning_window, text="Clear", command=clear_canvas)
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
-    read_button = Button(learning_window, text="Read", command=read_file_contents)
+    read_button = Button(learning_window, text="Read", command=read_from_csv)
     read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     learn_button = Button(learning_window, text="Learn", command=learn)
