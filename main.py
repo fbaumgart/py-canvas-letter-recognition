@@ -74,7 +74,7 @@ def learning_mode():
 
     def save_pattern(list_of_bits):
         try:
-            with open("dataset", "a+") as f:
+            with open("dataset.csv", "a+") as f:
                 wr = csv.writer(f, quoting=csv.QUOTE_ALL)
                 wr.writerow(list_of_bits)
         except FileNotFoundError:
