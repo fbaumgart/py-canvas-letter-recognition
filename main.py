@@ -82,7 +82,7 @@ def learning_mode():
 
     #test
     def read_from_csv():
-        with open("dataset", "r", newline='\n') as f:
+        with open("dataset.csv", "r", newline='\n') as f:
             reader = csv.reader(f)
             for row in reader:
                 print(row)
