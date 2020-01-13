@@ -16,6 +16,7 @@ def clear_canvas():
     w.delete("all")
 
 
+#converts list of RGB tuples from canvas image to the list of 0s and 1s
 def convert_list_of_RGB_tuples_to_list_of_bits(param):
     new_list_of_bits = []
     for i in param:
@@ -25,10 +26,10 @@ def convert_list_of_RGB_tuples_to_list_of_bits(param):
             elif i[0] == 0:
                 new_list_of_bits.append(1)
             break
-
     return new_list_of_bits
 
 
+#action triggered by the 'Recognize' button in main window
 def recognize():
     ps_from_canvas = w.postscript(colormode="mono")
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
@@ -37,7 +38,7 @@ def recognize():
     convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
 
 
-#learning mode view
+#learning mode window
 def learning_mode():
     def canvas_to_list_of_RGB_tuples(canvas):
         ps_from_canvas = canvas.postscript(colormode="mono")
@@ -54,6 +55,7 @@ def learning_mode():
     def clear_canvas():
         w.delete("all")
 
+    #action triggered by the 'Learn' button in the learning window
     def learn():
         list_of_RGB_tuples = canvas_to_list_of_RGB_tuples(w)
         list_of_bits = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples)
@@ -61,6 +63,7 @@ def learning_mode():
         save_pattern(list_with_character)
         clear_canvas()
 
+    #appends the list of 0s and 1s with the chosen character
     def add_character_to_list_of_bits(list_of_bits, character):
         character = radio_variable.get()
         if character == 0:
@@ -69,18 +72,18 @@ def learning_mode():
             list_of_bits.append("B")
         elif character == 2:
             list_of_bits.append("C")
-
         return list_of_bits
 
+    #appends the dataset.csv file with the list of 0s and 1s with the appended character
     def save_pattern(list_of_bits):
         try:
             with open("dataset.csv", "a+") as f:
-                wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+                wr = csv.writer(f)
                 wr.writerow(list_of_bits)
         except FileNotFoundError:
             print("File not accessible")
 
-    #test
+    #test method for reading from the csv file and displaying in the console
     def read_from_csv():
         with open("dataset.csv", "r", newline='\n') as f:
             reader = csv.reader(f)
@@ -124,7 +127,7 @@ def learning_mode():
     mainloop()
 
 
-#recognition mode view
+#recognition mode windows
 master = Tk()
 master.title("Letter recognition")
 master.geometry("300x300")
