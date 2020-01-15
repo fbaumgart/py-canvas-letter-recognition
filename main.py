@@ -38,6 +38,20 @@ def recognize():
     convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
 
 
+def inputs_from_dataset():
+    with open("dataset.csv", "r", newline='\n') as f:
+        dataset = list(csv.reader(f))
+        dataset = np.array(dataset)
+        inputs = dataset[:, :-1]
+
+
+def outputs_from_dataset():
+    with open("dataset.csv", "r", newline='\n') as f:
+        dataset = list(csv.reader(f))
+        dataset = np.array(dataset)
+        outputs = dataset[:, -1]
+
+
 #learning mode window
 def learning_mode():
     def canvas_to_list_of_RGB_tuples(canvas):
@@ -109,7 +123,7 @@ def learning_mode():
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     #test
-    read_button = Button(learning_window, text="Read", command=read_from_csv)
+    read_button = Button(learning_window, text="Read", command=split_dataset_to_inputs_and_outputs)
     read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     learn_button = Button(learning_window, text="Learn", command=learn)
