@@ -132,11 +132,11 @@ def learning_mode():
     #appends the list of 0s and 1s with the chosen character
     def add_character_to_list_of_bits(list_of_bits, character):
         character = radio_variable.get()
-        if character == 0:
+        if character == 0: #A
             list_of_bits.append(2)
-        elif character == 1:
+        elif character == 1: #B
             list_of_bits.append(3)
-        elif character == 2:
+        elif character == 2: #C
             list_of_bits.append(4)
         return list_of_bits
 
