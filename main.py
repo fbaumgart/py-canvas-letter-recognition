@@ -123,7 +123,7 @@ def learning_mode():
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     #test
-    read_button = Button(learning_window, text="Read", command=split_dataset_to_inputs_and_outputs)
+    read_button = Button(learning_window, text="Read", command=read_from_csv)
     read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     learn_button = Button(learning_window, text="Learn", command=learn)
