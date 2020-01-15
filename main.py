@@ -80,7 +80,9 @@ def recognize():
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
     image_to_predict = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
     inputs = inputs_from_dataset()
+    print(inputs)
     outputs = outputs_from_dataset()
+    print(outputs)
     # create neural network
     NN = NeuralNetwork(inputs, outputs)
     # train neural network
@@ -93,6 +95,7 @@ def inputs_from_dataset():
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         inputs = dataset[:, :-1]
+        inputs = inputs.astype(np.int)
         return inputs
 
 
@@ -101,6 +104,7 @@ def outputs_from_dataset():
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         outputs = dataset[:, -1]
+        outputs = outputs.astype(np.int)
         return outputs
 
 
