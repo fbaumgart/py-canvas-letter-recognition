@@ -5,6 +5,50 @@ import numpy as np
 import csv
 
 
+class NeuralNetwork:
+
+    # intialize variables in class
+    def __init__(self, inputs, outputs):
+        self.inputs  = inputs
+        self.outputs = outputs
+        # initialize weights as .50 for simplicity
+        self.weights = np.array([[.50], [.50], [.50]])
+        self.error_history = []
+        self.epoch_list = []
+
+    #activation function ==> S(x) = 1/1+e^(-x)
+    def sigmoid(self, x, deriv=False):
+        if deriv == True:
+            return x * (1 - x)
+        return 1 / (1 + np.exp(-x))
+
+    # data will flow through the neural network.
+    def feed_forward(self):
+        self.hidden = self.sigmoid(np.dot(self.inputs, self.weights))
+
+    # going backwards through the network to update weights
+    def backpropagation(self):
+        self.error  = self.outputs - self.hidden
+        delta = self.error * self.sigmoid(self.hidden, deriv=True)
+        self.weights += np.dot(self.inputs.T, delta)
+
+    # train the neural net for 25,000 iterations
+    def train(self, epochs=1500):
+        for epoch in range(epochs):
+            # flow forward and produce an output
+            self.feed_forward()
+            # go back though the network to make corrections based on the output
+            self.backpropagation()
+            # keep track of the error history over each epoch
+            self.error_history.append(np.average(np.abs(self.error)))
+            self.epoch_list.append(epoch)
+
+    # function to predict output on new and unseen input data
+    def predict(self, new_input):
+        prediction = self.sigmoid(np.dot(new_input, self.weights))
+        return prediction
+
+
 def paint(event):
     python_green = "#476042"
     x1, y1 = (event.x - 1), (event.y - 1)
@@ -33,9 +77,17 @@ def convert_list_of_RGB_tuples_to_list_of_bits(param):
 def recognize():
     ps_from_canvas = w.postscript(colormode="mono")
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
-
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
-    convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
+    image_to_predict = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
+    inputs = inputs_from_dataset()
+    print(inputs)
+    outputs = outputs_from_dataset()
+    print(outputs)
+    # create neural network
+    NN = NeuralNetwork(inputs, outputs)
+    # train neural network
+    NN.train()
+    print(NN.predict(image_to_predict), ' - Correct: ', image_to_predict[0][0])
 
 
 def inputs_from_dataset():
@@ -43,6 +95,8 @@ def inputs_from_dataset():
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         inputs = dataset[:, :-1]
+        inputs = inputs.astype(np.int)
+        return inputs
 
 
 def outputs_from_dataset():
@@ -50,6 +104,8 @@ def outputs_from_dataset():
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         outputs = dataset[:, -1]
+        outputs = outputs.astype(np.int)
+        return outputs
 
 
 #learning mode window
@@ -80,12 +136,12 @@ def learning_mode():
     #appends the list of 0s and 1s with the chosen character
     def add_character_to_list_of_bits(list_of_bits, character):
         character = radio_variable.get()
-        if character == 0:
-            list_of_bits.append("A")
-        elif character == 1:
-            list_of_bits.append("B")
-        elif character == 2:
-            list_of_bits.append("C")
+        if character == 0: #A
+            list_of_bits.append(2)
+        elif character == 1: #B
+            list_of_bits.append(3)
+        elif character == 2: #C
+            list_of_bits.append(4)
         return list_of_bits
 
     #appends the dataset.csv file with the list of 0s and 1s with the appended character
@@ -123,7 +179,7 @@ def learning_mode():
     clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     #test
-    read_button = Button(learning_window, text="Read", command=split_dataset_to_inputs_and_outputs)
+    read_button = Button(learning_window, text="Read", command=read_from_csv)
     read_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
     learn_button = Button(learning_window, text="Learn", command=learn)
