@@ -3,16 +3,17 @@ from PIL import Image
 import io
 import numpy as np
 import csv
+import matplotlib.pyplot as plt
 
 
 class NeuralNetwork:
 
     # intialize variables in class
     def __init__(self, inputs, outputs):
-        self.inputs  = inputs
+        self.inputs = inputs
         self.outputs = outputs
-        # initialize weights as .50 for simplicity
-        self.weights = np.array([[.50], [.50], [.50]])
+        self.init_weights = np.random.rand(1,784)
+        self.weights = np.transpose(self.init_weights)
         self.error_history = []
         self.epoch_list = []
 
@@ -28,12 +29,12 @@ class NeuralNetwork:
 
     # going backwards through the network to update weights
     def backpropagation(self):
-        self.error  = self.outputs - self.hidden
+        self.error = self.outputs - self.hidden
         delta = self.error * self.sigmoid(self.hidden, deriv=True)
-        self.weights += np.dot(self.inputs.T, delta)
+        self.weights = np.dot(self.inputs.T, delta) + self.weights
 
     # train the neural net for 25,000 iterations
-    def train(self, epochs=1500):
+    def train(self, epochs=25000):
         for epoch in range(epochs):
             # flow forward and produce an output
             self.feed_forward()
@@ -79,6 +80,8 @@ def recognize():
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
     image_to_predict = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
+    print(image_to_predict)
+    print(len(image_to_predict))
     inputs = inputs_from_dataset()
     print(inputs)
     outputs = outputs_from_dataset()
@@ -87,11 +90,20 @@ def recognize():
     NN = NeuralNetwork(inputs, outputs)
     # train neural network
     NN.train()
-    print(NN.predict(image_to_predict), ' - Correct: ', image_to_predict[0][0])
+    print(NN.predict(image_to_predict)) #, ' - Correct: ', image_to_predict[0][0])
+    print(len(NN.predict(image_to_predict)))
+    print(NN.weights)
+    print(len(NN.weights))
+    # plot the error over the entire training duration
+    plt.figure(figsize=(15, 5))
+    plt.plot(NN.epoch_list, NN.error_history)
+    plt.xlabel('Epoch')
+    plt.ylabel('Error')
+    plt.show()
 
 
 def inputs_from_dataset():
-    with open("dataset.csv", "r", newline='\n') as f:
+    with open("dataset-mod.csv", "r", newline='\n') as f:
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         inputs = dataset[:, :-1]
@@ -100,7 +112,7 @@ def inputs_from_dataset():
 
 
 def outputs_from_dataset():
-    with open("dataset.csv", "r", newline='\n') as f:
+    with open("dataset-mod.csv", "r", newline='\n') as f:
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         outputs = dataset[:, -1]
@@ -197,6 +209,21 @@ def learning_mode():
     mainloop()
 
 
+def action():
+    inputs = np.array([[0, 1, 0],
+                       [0, 1, 1],
+                       [0, 0, 0],
+                       [1, 0, 0],
+                       [1, 1, 1],
+                       [1, 0, 1]])
+
+    print(inputs)
+    inputs2 = inputs_from_dataset()
+    print(inputs2)
+    outputs = outputs_from_dataset()
+    print(outputs)
+
+
 #recognition mode windows
 master = Tk()
 master.title("Letter recognition")
@@ -216,6 +243,9 @@ w.bind("<B1-Motion>", paint)
 
 clear_button = Button(master, text="Clear", command=clear_canvas)
 clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
+
+action_button = Button(master, text="Action", command=action)
+action_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
 recognize_button = Button(master, text="Recognize", command=recognize)
 recognize_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=10)
