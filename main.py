@@ -80,20 +80,13 @@ def recognize():
     image = Image.open(io.BytesIO(ps_from_canvas.encode('utf-8')))
     list_of_RGB_tuples_from_image = list(image.getdata()) #each tuple represents one pixel
     image_to_predict = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
-    print(image_to_predict)
-    print(len(image_to_predict))
     inputs = inputs_from_dataset()
-    print(inputs)
     outputs = outputs_from_dataset()
-    print(outputs)
     # create neural network
     NN = NeuralNetwork(inputs, outputs)
     # train neural network
     NN.train()
     print(NN.predict(image_to_predict)) #, ' - Correct: ', image_to_predict[0][0])
-    print(len(NN.predict(image_to_predict)))
-    print(NN.weights)
-    print(len(NN.weights))
     # plot the error over the entire training duration
     plt.figure(figsize=(15, 5))
     plt.plot(NN.epoch_list, NN.error_history)
@@ -103,7 +96,7 @@ def recognize():
 
 
 def inputs_from_dataset():
-    with open("dataset-mod.csv", "r", newline='\n') as f:
+    with open("dataset.csv", "r", newline='\n') as f:
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         inputs = dataset[:, :-1]
@@ -112,11 +105,12 @@ def inputs_from_dataset():
 
 
 def outputs_from_dataset():
-    with open("dataset-mod.csv", "r", newline='\n') as f:
+    with open("dataset.csv", "r", newline='\n') as f:
         dataset = list(csv.reader(f))
         dataset = np.array(dataset)
         outputs = dataset[:, -1]
         outputs = outputs.astype(np.int)
+        outputs = outputs.reshape(len(outputs),1)
         return outputs
 
 
@@ -149,11 +143,9 @@ def learning_mode():
     def add_character_to_list_of_bits(list_of_bits, character):
         character = radio_variable.get()
         if character == 0: #A
-            list_of_bits.append(2)
+            list_of_bits.append(0)
         elif character == 1: #B
-            list_of_bits.append(3)
-        elif character == 2: #C
-            list_of_bits.append(4)
+            list_of_bits.append(1)
         return list_of_bits
 
     #appends the dataset.csv file with the list of 0s and 1s with the appended character
@@ -201,27 +193,11 @@ def learning_mode():
     radio_variable.set(0)
     Radiobutton(learning_window, text="A", variable=radio_variable, value=0).pack()
     Radiobutton(learning_window, text="B", variable=radio_variable, value=1).pack()
-    Radiobutton(learning_window, text="C", variable=radio_variable, value=2).pack()
 
     message = Label(learning_window, text="Choose the character, draw and click Learn")
     message.pack(side=BOTTOM, pady=10)
 
     mainloop()
-
-
-def action():
-    inputs = np.array([[0, 1, 0],
-                       [0, 1, 1],
-                       [0, 0, 0],
-                       [1, 0, 0],
-                       [1, 1, 1],
-                       [1, 0, 1]])
-
-    print(inputs)
-    inputs2 = inputs_from_dataset()
-    print(inputs2)
-    outputs = outputs_from_dataset()
-    print(outputs)
 
 
 #recognition mode windows
@@ -244,13 +220,10 @@ w.bind("<B1-Motion>", paint)
 clear_button = Button(master, text="Clear", command=clear_canvas)
 clear_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
 
-action_button = Button(master, text="Action", command=action)
-action_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=22)
-
 recognize_button = Button(master, text="Recognize", command=recognize)
 recognize_button.pack(side=BOTTOM, pady=5, ipady=5, ipadx=10)
 
-message = Label(master, text="Draw A, B or C in the canvas and click Recognize")
+message = Label(master, text="Draw A or B in the canvas and click Recognize")
 message.pack(side=BOTTOM, pady=10)
 
 menu_bar = Menu(master)
