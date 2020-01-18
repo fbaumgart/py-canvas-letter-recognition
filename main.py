@@ -82,11 +82,9 @@ def recognize():
     image_to_predict = convert_list_of_RGB_tuples_to_list_of_bits(list_of_RGB_tuples_from_image)
     inputs = inputs_from_dataset()
     outputs = outputs_from_dataset()
-    # create neural network
     NN = NeuralNetwork(inputs, outputs)
-    # train neural network
     NN.train()
-    print(NN.predict(image_to_predict)) #, ' - Correct: ', image_to_predict[0][0])
+    print(NN.predict(image_to_predict))
     # plot the error over the entire training duration
     plt.figure(figsize=(15, 5))
     plt.plot(NN.epoch_list, NN.error_history)
